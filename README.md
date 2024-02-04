@@ -5,7 +5,8 @@ This project consists of four main features:
 
 -Room Image Generation through Prompt
  This feature allows users to generate images of rooms based on prompts provided by the user. Users can specify the size of the room, the 
- color scheme, and the style of the furniture. The Room Image Generation feature uses machine learning algorithms to generate realistic images of the room.
+ color scheme, and the style of the furniture. The Room Image Generation feature uses machine learning algorithms to generate realistic 
+ images of the room.
 -Object detection and price estimation of the cost that would take to replicate the room. 
 -Room Panorama Effect
  The Room Panorama Effect feature allows users to view their room in a 360-degree panorama. Users can move their device around to view the 
