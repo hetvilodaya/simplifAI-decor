@@ -1,16 +1,33 @@
+import streamlit as st
 from PyPDF2 import PdfReader
 from langchain.text_splitter import CharacterTextSplitter
+from streamlit_chat import message
+from langchain.chains import ConversationalRetrievalChain
+from langchain.embeddings import HuggingFaceEmbeddings
+from langchain.llms import LlamaCpp
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.vectorstores import FAISS
+from langchain.memory import ConversationBufferMemory
+from langchain.document_loaders import PyPDFLoader
 from langchain.embeddings import OpenAIEmbeddings, HuggingFaceInstructEmbeddings
 from langchain.vectorstores import FAISS
-from langchain.chat_models import ChatOpenAI
-from langchain.memory import ConversationBufferMemory
-from langchain.chains import ConversationalRetrievalChain
 from dotenv import load_dotenv
-from langchain.llms import HuggingFaceHub
-from dotenv import *
-from PyPDF2 import PdfReader
-import spacy
-from collections import Counter
+from langchain.chat_models import ChatOpenAI
+import os
+import tempfile
+
+
+
+
+def initialize_session_state():
+    if 'history' not in st.session_state:
+        st.session_state['history'] = []
+
+    if 'generated' not in st.session_state:
+        st.session_state['generated'] = ["Hello! Ask me anything about 🤗"]
+
+    if 'past' not in st.session_state:
+        st.session_state['past'] = ["Hey! 👋"]
 
 def get_pdf_text(pdf_docs):
     text = ""
@@ -36,16 +53,6 @@ def get_vectorstore(text_chunks):
     vectorstore = FAISS.from_texts(texts=text_chunks, embedding=embeddings)
     return vectorstore
 
-def get_conversation_chain(vectorstore):
-    llm = ChatOpenAI()
-    #llm = HuggingFaceHub(repo_id="google/flan-t5-small", model_kwargs={"temperature":0.5, "max_length":512})
-    memory = ConversationBufferMemory(memory_key='chat_history', return_messages=True)
-    conversation_chain = ConversationalRetrievalChain.from_llm(
-        llm=llm,
-        retriever=vectorstore.as_retriever(),
-        memory=memory
-    )
-    return conversation_chain
 
 def process_pdf_documents(text):
 
@@ -57,28 +64,69 @@ def process_pdf_documents(text):
     vectorstore = get_vectorstore(text_chunks)
 
     # create conversation chain
-    conversation_chain = get_conversation_chain(vectorstore)
-    return conversation_chain
+    chain = create_conversational_chain(vectorstore)
+    return chain
 
 
+def conversation_chat(query, chain, history):
+    result = chain({"question": query, "chat_history": history})
+    history.append((query, result["answer"]))
+    return result["answer"]
 
+def display_chat_history(chain):
+    reply_container = st.container()
+    container = st.container()
 
-if __name__ == '__main__':
+    with container:
+        with st.form(key='my_form', clear_on_submit=True):
+            user_input = st.text_input("Question:", placeholder="Ask about your PDF", key='input')
+            submit_button = st.form_submit_button(label='Send')
+
+        if submit_button and user_input:
+            with st.spinner('Generating response...'):
+                output = conversation_chat(user_input, chain, st.session_state['history'])
+
+            st.session_state['past'].append(user_input)
+            st.session_state['generated'].append(output)
+
+    if st.session_state['generated']:
+        with reply_container:
+            for i in range(len(st.session_state['generated'])):
+                message(st.session_state["past"][i], is_user=True, key=str(i) + '_user', avatar_style="thumbs")
+                message(st.session_state["generated"][i], key=str(i), avatar_style="fun-emoji")
+
+def create_conversational_chain(vector_store):
+#     # Create llm
+#     llm = LlamaCpp(
+#     streaming = True,
+#     model_path="mistral-7b-instruct-v0.1.Q4_K_M.gguf",
+#     temperature=0.75,
+#     top_p=1, 
+#     verbose=True,
+#     n_ctx=4096
+# )
+    llm = ChatOpenAI()
+    memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
+
+    chain = ConversationalRetrievalChain.from_llm(llm=llm, chain_type='stuff',
+                                                 retriever=vector_store.as_retriever(search_kwargs={"k": 2}),
+                                                 memory=memory)
+    return chain
+
+def main():
+    # Initialize session state
+    initialize_session_state()
+    st.title("Your Virtual Design Assistant using  Mistral-7B-Instruct :")
+    # Initialize Streamlit
     load_dotenv()
     pdf_docs = ['Interior-Design-Basics-red.pdf']  # Provide the paths to the PDF documents "path_to_pdf2.pdf"
     pdf_text = get_pdf_text(pdf_docs)
-    conversation_chain = process_pdf_documents(pdf_text)
+    chain = process_pdf_documents(pdf_text)
 
-    while True:
-        user_question = input("Enter your question (or 'exit' to quit): ")
-        if user_question.lower() == 'exit':
-            break
 
-        response = conversation_chain({'question': user_question})
-        chat_history = response['chat_history']
 
-        for i, message in enumerate(chat_history):
-            if i % 2 == 0:
-                print(f"User: {message.content}")
-            else:
-                print(f"Bot: {message.content}")
+    
+    display_chat_history(chain)
+
+if __name__ == "__main__":
+    main()
