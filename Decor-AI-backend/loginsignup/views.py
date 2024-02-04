@@ -76,7 +76,7 @@ class UserAPI(generics.RetrieveAPIView):
 
 class Newssource(APIView):
     def post(self, request):
-        os.environ["REPLICATE_API_TOKEN"] = "r8_VHjBVBjw2jDcDobmBWabZxwcdozfPy73gTc9c"
+        os.environ["REPLICATE_API_TOKEN"] = "API_KEY"
         model = replicate.models.get('rossjillian/controlnet')
         data = json.loads(request.body)
         prompt = data['prompt']
@@ -96,9 +96,6 @@ class Newssource(APIView):
 
 class pricecalculation(APIView):
     def post(self, request):
-        # type_of_project = request.POST.get('type_of_project')
-        # select_space = request.POST.get('select_space')
-        # bhk = request.POST.get('bhk')
         carpet_area = request.POST.get('carpet_area')
         if 500 <= int(carpet_area) < 700:
             data = [{'title': 'Royale Shyne Luxury Emulsion', 'desc': 'Luxury has many forms, and one of them is the Royale Shyne Luxury Emulsion. A high sheen, washable wall paint with stain-resistant finish ensures walls look new for a long time. The paint’s high gloss and even smoother finish would make you want to stare at it all day. It’s the only paint emulsion in India equipped with Teflon surface protector that makes it highly durable.',
