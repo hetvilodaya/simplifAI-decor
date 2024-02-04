@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "207769424785",
+    "project_id": "datathon2-d7c22",
+    "storage_bucket": "datathon2-d7c22.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:207769424785:android:8466ce2a854b074e604030",
+        "android_client_info": {
+          "package_name": "com.example.codeshastra"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB0x8Nd8iiGP-SahMDRKKF0AfaiNlGXJ3Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
