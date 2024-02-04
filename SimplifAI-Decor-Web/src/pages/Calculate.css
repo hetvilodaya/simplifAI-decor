@@ -1,0 +1,12 @@
+.estimate {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.plan {
+    line-height: 3em;
+    font-size: 1.2em;
+    margin: 10px 200px 10px 20px;
+}
