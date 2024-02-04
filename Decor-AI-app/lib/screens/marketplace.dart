@@ -49,7 +49,7 @@ class _MarketPlaceState extends State<MarketPlace> {
         body: GridView.builder(
           physics: BouncingScrollPhysics(),
           gridDelegate:
-              SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+              SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 1),
           itemCount: 3,
           itemBuilder: (context, index) {
             Items eachItemInfo = products[index];

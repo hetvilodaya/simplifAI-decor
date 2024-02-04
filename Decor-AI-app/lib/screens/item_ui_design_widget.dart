@@ -63,8 +63,8 @@ class _ItemUIDesignWidgetState extends State<ItemUIDesignWidget> {
                             widget.itemsInfo!.itemName.toString(),
                             maxLines: 2,
                             style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
+                              color: darkblue,
+                              fontSize: 28,
                             ),
                           ),
                         ),

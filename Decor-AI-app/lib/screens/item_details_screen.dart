@@ -125,7 +125,24 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                                 borderRadius: BorderRadius.circular(30)),
                             backgroundColor:
                                 Color(0xffbebebe).withOpacity(0.2)),
-                        onPressed: () {},
+                        onPressed: () {
+                          var options = {
+                            "key": "rzp_test_53topzkI5ia0Ge",
+                            "amount": 200 * 100,
+                            "name": "abcd",
+                            "description": "title",
+                            "prefill": {
+                              "contact": "9326549053",
+                              "email": "yashs230602@gmail.com"
+                            },
+                          };
+
+                          try {
+                            _razorpay.open(options);
+                          } catch (e) {
+                            print(e.toString());
+                          }
+                        },
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
